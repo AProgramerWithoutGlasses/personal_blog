@@ -2,12 +2,11 @@ package dao
 
 import (
 	"fmt"
-	"staging/src/model"
 	"staging/src/model/gorm_model"
 )
 
 func (dao *Dao) GetUserByUsername(username string) (user gorm_model.User, err error) {
-	err = dao.db.Take(&user, "username=?", username).Error
+	err = dao.db.Take(&user, "username = ?", username).Error
 	return
 }
 
@@ -22,6 +21,6 @@ func (dao *Dao) ExistedUser(username string) (bool, error) {
 	return count > 0, nil
 }
 
-func (dao *Dao) InsertUser(registerModel *model.RegisterReqModel) (err error) {
+func (dao *Dao) InsertUser(registerModel gorm_model.User) (err error) {
 	return dao.db.Create(&registerModel).Error
 }

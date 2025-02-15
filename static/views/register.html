@@ -119,7 +119,9 @@
 {{if .}}
 <script>
     var msg = "{{.Msg}}"; // 获取 Msg 的值
-    alert(msg); // 弹窗显示 Msg 的值
+    if(msg!=="") {
+        alert(msg); // 弹窗显示 Msg 的值
+    }
 
     // 判断 Msg 中是否包含 "成功"
     if (msg.includes("成功")) {

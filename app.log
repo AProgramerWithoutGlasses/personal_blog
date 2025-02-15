@@ -1,1 +1,0 @@
-{"level":"ERROR","time":"2025-02-07T10:34:36.378+0800","caller":"dao/mysql.go:15","msg":"gorm init failed %v","error":"sql: unknown driver \"mysql\" (forgotten import?)"}

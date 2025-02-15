@@ -13,11 +13,16 @@ func InitRouter() *gin.Engine {
 	// 预加载html模板
 	r.LoadHTMLGlob("static/views/*")
 
+	// 加载静态资源
+	r.Static("/static", "./static")
+
 	r.GET("/test", test)
 	r.POST("/login", loginFrontHandler("login.html"))
 	r.GET("/login", loginFrontView("login.html"))
 	r.POST("/register", registerHandler("register.html"))
-	//r.GET("/register", registerView("register.html"))
+	r.GET("/register", registerView("register.html"))
+	r.GET("/index", indexView("index.html"))
+	r.GET("/index/post/:slug", postView("index.html"))
 
 	return r
 }

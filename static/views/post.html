@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{.Date.Post.Title}} - {{.Data.Base.Title}}</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* 保持与首页一致的样式 */
+    .article-card {
+      transition: transform 0.2s;
+    }
+    .article-content {
+      line-height: 1.8;
+      font-size: 1.1rem;
+    }
+    .article-meta {
+      border-bottom: 1px solid #eee;
+      padding-bottom: 1rem;
+      margin-bottom: 2rem;
+    }
+    .code-block {
+      background-color: #f8f9fa;
+      padding: 1rem;
+      border-radius: 5px;
+      margin: 1rem 0;
+    }
+  </style>
+</head>
+<body>
+<!-- 导航栏（保持与首页一致） -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <a class="navbar-brand" href="/">{{.Data.Base.Title}}</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        {{range .Data.Categories}}
+        <li class="nav-item">
+          <a class="nav-link" href="/category/{{.Name}}">{{.Name}}</a>
+        </li>
+        {{end}}
+      </ul>
+      <form class="d-flex" action="/search">
+        <input class="form-control me-2" type="search" name="q" placeholder="搜索文章">
+        <button class="btn btn-outline-success" type="submit">搜索</button>
+      </form>
+    </div>
+  </div>
+</nav>
+
+<!-- 文章内容 -->
+<div class="container mt-4">
+  <div class="row">
+    <!-- 主内容区 -->
+    <div class="col-lg-8">
+      <article class="card article-card">
+        <div class="card-body">
+          <!-- 文章标题 -->
+          <h1 class="mb-3">{{.Date.Post.Title}}</h1>
+
+          <!-- 文章元信息 -->
+          <div class="article-meta text-muted">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <span class="me-3">作者：{{.Date.Base.Author}}</span>
+                <span class="me-3">发布日期：{{.Date.Post.CreatedAt.Format "2006-01-02"}}</span>
+                <span>阅读量：{{.Date.Post.Views}}</span>
+              </div>
+              <span class="badge bg-primary">{{.Date.Post.Category.Name}}</span>
+            </div>
+          </div>
+
+          <!-- 文章正文 -->
+          <div class="article-content">
+            {{.Date.Post.Content}}
+          </div>
+
+          <!-- 导航按钮 -->
+          <div class="mt-5 d-flex justify-content-between">
+            {{if .Date.PrePost}}
+            <a href="/index/post/{{.Date.PrePost.Slug}}" class="btn btn-outline-primary">
+              ← 上一篇：{{.Date.PrePost.Title}}
+            </a>
+            {{end}}
+            {{if .Date.NextPost}}
+            <a href="/post/{{.Date.NextPost.Slug}}" class="btn btn-outline-primary ms-auto">
+              下一篇：{{.Date.NextPost.Title}} →
+            </a>
+            {{end}}
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</div>
+
+<!-- 页脚（保持与首页一致） -->
+<footer class="bg-light py-4 mt-4">
+  <div class="container text-center">
+    <p class="mb-0">
+      &copy; {{.Data.Base.Author}}.
+      Powered by <a href="https://golang.org/" class="text-decoration-none">Go</a>
+    </p>
+  </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="/static/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -17,7 +17,7 @@ func (s *Service) LoginService(loginModel model.LoginReqModel) (myPermission str
 		return
 	}
 
-	if loginModel.Password != user.PasswordHash {
+	if loginModel.Password != user.Password {
 		err = model.ErrInvalidPassword
 	}
 

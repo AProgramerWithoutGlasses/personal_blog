@@ -19,7 +19,7 @@ func initDB(m *settings.MySQLConfig) *gorm.DB {
 	}
 
 	// 自动迁移
-	err = db.AutoMigrate(&gorm_model.User{}, &gorm_model.Post{}, &gorm_model.Category{})
+	err = db.AutoMigrate(&gorm_model.User{}, &gorm_model.Post{}, &gorm_model.Category{}, &gorm_model.Comment{}, &gorm_model.Base{})
 	if err != nil {
 		zap.L().Error("gorm migrate failed", zap.Error(err))
 		return nil

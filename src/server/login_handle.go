@@ -15,10 +15,10 @@ func loginFrontHandler(name string) gin.HandlerFunc {
 		fmt.Println(1111)
 		// 接收参数
 		var loginReqModel = model.LoginReqModel{}
-		err := c.ShouldBindJSON(&loginReqModel)
+		err := c.ShouldBind(&loginReqModel)
 		if err != nil {
 			fmt.Println("c.ShouldBindJSON(&loginReqModel) err:", err)
-			response.Fail(c, name, err.Error())
+			response.Fail(c, name, response.ErrParamBind)
 			zap.L().Error("c.ShouldBindJSON(&loginModel) err: ", zap.Error(err))
 			return
 		}
@@ -27,7 +27,7 @@ func loginFrontHandler(name string) gin.HandlerFunc {
 		myPermission, err := svc.LoginService(loginReqModel)
 		if err != nil {
 			fmt.Println("svc.LoginService(&loginReqModel) err:", err)
-			response.Fail(c, name, err.Error())
+			response.Fail(c, name, response.ErrServer)
 			zap.L().Error("svc.LoginService err: ", zap.Error(err))
 			return
 		}
@@ -36,7 +36,7 @@ func loginFrontHandler(name string) gin.HandlerFunc {
 		token, err := jwt.GenerateToken(loginReqModel.Username, myPermission)
 		if err != nil {
 			fmt.Println("jwt.GenerateToken(&loginReqModel) err:", err)
-			response.Fail(c, name, err.Error())
+			response.Fail(c, name, response.ErrServer)
 			zap.L().Error("jwt.GenerateToken err: ", zap.Error(err))
 			return
 		}
@@ -44,7 +44,7 @@ func loginFrontHandler(name string) gin.HandlerFunc {
 
 		// 响应
 		loginRes := model.LoginResModel{Token: token}
-		response.Success(c, name, loginRes)
+		response.SuccessWithMsg(c, name, "登录成功", loginRes)
 		fmt.Println(33333)
 
 	}
@@ -53,7 +53,7 @@ func loginFrontHandler(name string) gin.HandlerFunc {
 // loginFrontHandler 用于登录前台
 func loginFrontView(name string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		response.Success(c, name, "登录成功")
+		response.Success(c, name, "")
 	}
 }
 

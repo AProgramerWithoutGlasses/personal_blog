@@ -1,8 +1,12 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"staging/src/model"
+	"staging/src/model/gorm_model"
+	"staging/src/pkg/response"
+	"strconv"
 )
 
 func (s *Service) RegisterService(registerModel *model.RegisterReqModel) (err error) {
@@ -12,14 +16,21 @@ func (s *Service) RegisterService(registerModel *model.RegisterReqModel) (err er
 		fmt.Println("dao.ExistedUser err:", err)
 		return
 	}
-	fmt.Println("dao.Existed is:", existed)
 
 	if existed {
 		// 若该用户已存在，则返回，不再注册。
-		//err = model.ErrUserExist
+		err = errors.New(response.ErrUserExisted.Msg())
 	} else {
 		// 若该用户不存在，则进行注册
-		err = s.dao.InsertUser(registerModel)
+		user := gorm_model.User{
+			Username: registerModel.Username,
+			Password: registerModel.Password,
+			Name:     registerModel.Name,
+			Gender:   registerModel.Gender,
+			Age:      strconv.Itoa(registerModel.Age),
+		}
+
+		err = s.dao.InsertUser(user)
 		if err != nil {
 			fmt.Println("dao.InsertUser err:", err)
 			return

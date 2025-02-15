@@ -65,11 +65,15 @@
     </form>
     <button onclick="window.location.href='/register'">注册</button> <!-- 注册按钮 -->
 
-    {{if and (.) (ne .Data "登录成功") }}
+
     <script>
-        alert("{{.Msg}}"); // 弹窗显示 Data 的值
+        var msg = "{{.Msg}}"
+        if (msg.includes("成功")) {
+            window.location.href = "/index";  // 修改为你需要重定向的页面，例如："/login"
+        } else {
+            alert("{{.Msg}}"); // 弹窗显示 Data 的值
+        }
     </script>
-    {{end}}
 </div>
 
 
