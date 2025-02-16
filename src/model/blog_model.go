@@ -1,6 +1,6 @@
 package model
 
-import "staging/src/model/gorm_model"
+import "blog1/src/model/gorm_model"
 
 type IndexModel struct {
 	Posts      []gorm_model.Post

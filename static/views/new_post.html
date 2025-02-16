@@ -1,0 +1,201 @@
+{{define "new_post"}}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新建文章 - {{.Data.Base.Title}}</title>
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f5f6fa;
+            font-family: 'Arial', sans-serif;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #34495e;
+            text-align: center;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+
+        .form-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 40px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .form-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #34495e;
+            margin-bottom: 8px;
+        }
+
+        .form-control,
+        .form-control-file {
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            padding: 12px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-control:focus,
+        .form-control-file:focus {
+            border-color: #66bb6a;
+            box-shadow: 0 0 0 0.15rem rgba(102, 187, 106, 0.25);
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        .select-wrapper select {
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="<url id="cuoqpfbo7orcf474o830" type="url" status="parsed" title="SVG namespace" wc="777">http://www.w3.org/2000/svg</url>   " width="12" height="8" viewBox="0 0 12 8"><path d="M0 0l6 6l6-6" fill="none" stroke="%2334495e" stroke-width="2"></path></svg>');
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 30px;
+        }
+
+        .file-input-label {
+            color: #6c757d;
+            cursor: pointer;
+            display: block;
+            padding: 12px;
+            border: 1px dashed #ced4da;
+            border-radius: 6px;
+            text-align: center;
+            transition: background-color 0.2s, border-color 0.2s;
+            margin-bottom: 16px; /* 使图片区域与其他输入框有间距 */
+        }
+
+        .file-input-label:hover {
+            background-color: #e9ecef;
+            border-color: #66bb6a;
+        }
+
+        .custom-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        .custom-btn:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .upload-preview {
+            width: 80px;
+            height: 80px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: inline-block;
+        }
+
+        .placeholder-text {
+            color: #999999;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        /* 新增返回按钮样式 */
+        .return-btn {
+            position: absolute;
+            left: 20px;
+            bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="mt-5">新建文章</h1>
+    <div class="form-container">
+        <form action="/back/posts/new" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="title" class="form-label">标题</label>
+                <input type="text" class="form-control" id="title" name="title" required placeholder="请输入文章标题">
+            </div>
+            <div class="form-group">
+                <label for="category" class="form-label">分类</label>
+                <div class="select-wrapper">
+                    <select class="form-control" id="category" name="category_id" required>
+                        <option value="" disabled selected>请选择分类</option>
+                        {{range .Data.Categories}}
+                        <option value="{{.ID}}">{{.Name}}</option>
+                        {{end}}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="coverImg" class="form-label">封面图片</label>
+                <label for="coverImg" class="file-input-label">
+                    <div id="imagePreview" class="upload-preview" style="display: none;"></div>
+                    <div class="placeholder-text">点击上传封面图片</div>
+                    <input type="file" class="form-control-file" id="coverImg" name="file" style="display: none;" required accept="image/*">
+                </label>
+            </div>
+            <div class="form-group">
+                <label for="summary" class="form-label">摘要</label>
+                <textarea class="form-control" id="summary" name="summary" rows="3" placeholder="请输入文章摘要"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="content" class="form-label">内容</label>
+                <textarea class="form-control" id="content" name="content" rows="10" required placeholder="请输入文章内容"></textarea>
+            </div>
+            <div class="text-center mt-4">
+                <button type="submit" class="custom-btn">发布文章</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 新增返回按钮 -->
+    <a href="/back/posts/" class="custom-btn return-btn">返回</a>
+</div>
+
+<script>
+    document.getElementById('coverImg').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imagePreview = document.getElementById('imagePreview');
+                imagePreview.style.display = 'block'; // 显示预览区域
+                imagePreview.style.backgroundImage = 'url(' + e.target.result + ')'; // 设置背景图
+            };
+            reader.readAsDataURL(file); // 读取文件
+        }
+    });
+</script>
+</body>
+</html>
+
+<script>
+    var msg = "{{.Msg}}"; // 获取 Msg 的值
+    if(msg!=="") {
+        alert(msg); // 弹窗显示 Msg 的值
+    }
+</script>
+{{end}}

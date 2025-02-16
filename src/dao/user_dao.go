@@ -1,8 +1,8 @@
 package dao
 
 import (
+	"blog1/src/model/gorm_model"
 	"fmt"
-	"staging/src/model/gorm_model"
 )
 
 func (dao *Dao) GetUserByUsername(username string) (user gorm_model.User, err error) {

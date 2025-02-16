@@ -1,9 +1,9 @@
 package dao
 
 import (
+	"blog1/src/pkg/settings"
 	"github.com/go-redis/redis/v8"
 	"gorm.io/gorm"
-	"staging/src/pkg/settings"
 )
 
 type Dao struct {

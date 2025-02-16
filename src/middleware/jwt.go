@@ -1,9 +1,9 @@
 package middleware
 
 import (
+	"blog1/src/pkg/jwt"
+	"blog1/src/pkg/response"
 	"github.com/gin-gonic/gin"
-	"staging/src/pkg/jwt"
-	"staging/src/pkg/response"
 	"strings"
 )
 

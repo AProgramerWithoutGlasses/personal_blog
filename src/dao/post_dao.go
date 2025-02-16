@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"staging/src/model/gorm_model"
+	"blog1/src/model/gorm_model"
 	"time"
 )
 
@@ -63,5 +63,10 @@ func (dao *Dao) GetComments() (comments []gorm_model.Comment, err error) {
 
 func (dao *Dao) GetUsers() (users []gorm_model.User, err error) {
 	err = dao.db.Preload("Comments").Find(&users).Error
+	return
+}
+
+func (dao *Dao) InsertPost(post gorm_model.Post) (err error) {
+	err = dao.db.Create(&post).Error
 	return
 }

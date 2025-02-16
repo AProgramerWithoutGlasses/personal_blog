@@ -1,8 +1,8 @@
 package server
 
 import (
+	"blog1/src/logger"
 	"github.com/gin-gonic/gin"
-	"staging/src/logger"
 )
 
 func InitRouter() *gin.Engine {
@@ -29,11 +29,17 @@ func InitRouter() *gin.Engine {
 
 	// 后台
 	backRouter := r.Group("/back")
-	bpRouter := backRouter.Group("/post")
-	bpRouter.POST("/") // 增
-	bpRouter.DELETE("/:id")
-	bpRouter.PUT("/:id")              // 改
-	bpRouter.GET("/", GetAllBackData) //posts
+	bpRouter := backRouter.Group("/posts")
+	bpRouter.POST("/new", NewPost)      // 增
+	bpRouter.DELETE("/:id")             // 删
+	bpRouter.PUT("/:id")                // 改
+	bpRouter.GET("/", GetAllBackData)   // 查所有
+	bpRouter.GET("/:slug", GetPostBack) // 查单篇
+
+	// todo
+	bpRouter.GET("/:category_name", GetAllBackData) // 查单篇
+
+	bpRouter.GET("/new", NewPostView) //
 
 	return r
 }

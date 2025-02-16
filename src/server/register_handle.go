@@ -1,11 +1,11 @@
 package server
 
 import (
+	"blog1/src/model"
+	"blog1/src/pkg/response"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
-	"staging/src/model"
-	"staging/src/pkg/response"
 )
 
 func registerHandler(name string) func(c *gin.Context) {

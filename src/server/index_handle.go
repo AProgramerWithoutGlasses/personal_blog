@@ -1,9 +1,9 @@
 package server
 
 import (
+	"blog1/src/pkg/response"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"staging/src/pkg/response"
 )
 
 func indexView(name string) gin.HandlerFunc {

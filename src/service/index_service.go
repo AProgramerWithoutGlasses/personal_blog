@@ -1,10 +1,10 @@
 package service
 
 import (
+	"blog1/src/model"
 	"errors"
 	"fmt"
 	"gorm.io/gorm"
-	"staging/src/model"
 )
 
 func (s *Service) IndexService() (res model.IndexModel, err error) {

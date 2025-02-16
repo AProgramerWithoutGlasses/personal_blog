@@ -20,16 +20,16 @@ type User struct {
 // Post 结构体映射 posts 表
 type Post struct {
 	gorm.Model
-	Title    string `gorm:"not null; foreignKey"`
-	Content  string `gorm:"not null"`
-	CoverImg string `gorm:"default:null"` // 封面
-	Summary  string `gorm:"default: "`
-	Comment  string `gorm:"type:text"`
-	Views    int    `gorm:"default:0"` // 浏览次数
-	Slug     string `gorm:"not null; unique"`
+	Title    string `gorm:"not null; foreignKey" form:"title"`
+	Content  string `gorm:"not null" form:"content"`
+	CoverImg string `gorm:"default:null" form:"coverImg"` // 封面
+	Summary  string `gorm:"default: " form:"summary"`
+	Comment  string `gorm:"type:text" form:"comment"`
+	Views    int    `gorm:"default:0" form:"views"` // 浏览次数
+	Slug     string `gorm:"not null; unique" form:"slug"`
 
 	// 外键关系
-	CategoryID int
+	CategoryID int       `form:"category_id"`
 	Comments   []Comment `gorm:"foreignKey:PostID"`
 	Category   Category
 }

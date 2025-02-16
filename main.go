@@ -1,6 +1,9 @@
 package main
 
 import (
+	"blog1/src/logger"
+	"blog1/src/pkg/settings"
+	"blog1/src/server"
 	"context"
 	"fmt"
 	"go.uber.org/zap"
@@ -8,9 +11,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"staging/src/logger"
-	"staging/src/pkg/settings"
-	"staging/src/server"
 	"syscall"
 	"time"
 )

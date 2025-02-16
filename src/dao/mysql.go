@@ -1,12 +1,12 @@
 package dao
 
 import (
+	"blog1/src/model/gorm_model"
+	"blog1/src/pkg/settings"
 	"fmt"
 	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"staging/src/model/gorm_model"
-	"staging/src/pkg/settings"
 )
 
 func initDB(m *settings.MySQLConfig) *gorm.DB {

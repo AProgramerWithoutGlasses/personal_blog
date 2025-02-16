@@ -1,15 +1,28 @@
 package service
 
 import (
+	"blog1/src/model"
+	"blog1/src/model/gorm_model"
+	"blog1/src/utils"
 	"fmt"
-	"staging/src/model"
+	"github.com/gosimple/slug"
+	"mime/multipart"
 )
 
-func (s *Service) BackAllDateService() (allBackDate model.BackAllDataModel, err error) {
-	posts, err := s.dao.GetPosts()
-	if err != nil {
-		fmt.Println("get posts err:", err)
-		return
+func (s *Service) BackAllDateService(categoryName string) (allBackDate model.BackAllDataModel, err error) {
+	var posts []gorm_model.Post
+	if categoryName == "" {
+		posts, err = s.dao.GetPosts()
+		if err != nil {
+			fmt.Println("get posts err:", err)
+			return
+		}
+	} else {
+		posts, err = s.dao.GetPostsByCategory(categoryName)
+		if err != nil {
+			fmt.Println("get GetPostsByCategory err:", err)
+			return
+		}
 	}
 
 	base, err := s.dao.GetBase()
@@ -43,5 +56,30 @@ func (s *Service) BackAllDateService() (allBackDate model.BackAllDataModel, err 
 		Comments:   comments,
 		Users:      users,
 	}
+	return
+}
+
+func (s *Service) NewPostService(postModel gorm_model.Post, file multipart.File, fileHeader *multipart.FileHeader) (err error) {
+	filePath, err := utils.SaveLocalFile(file, fileHeader)
+	if err != nil {
+		fmt.Println("utils.SaveLocalFile() err: ", err)
+		return err
+	}
+
+	slug1 := slug.Make(postModel.Title)
+
+	postModel.Slug = slug1
+	postModel.CoverImg = filePath
+
+	err = s.dao.InsertPost(postModel)
+
+	fmt.Printf("postModel:%#v\n", postModel)
+
+	return
+
+}
+
+func (s *Service) GetBackPostService(slug string) (post gorm_model.Post, err error) {
+	post, err = s.dao.GetPostByslug(slug)
 	return
 }

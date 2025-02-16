@@ -1,8 +1,8 @@
 package dao
 
 import (
+	"blog1/src/pkg/settings"
 	"github.com/go-redis/redis/v8"
-	"staging/src/pkg/settings"
 	"time"
 )
 

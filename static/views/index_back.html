@@ -109,40 +109,42 @@
   <!-- 文章管理 -->
   <div id="posts">
     <div class="d-flex justify-content-between mb-4">
-      <h3>文章管理</h3>
-      <a href="/admin/post/new" class="btn btn-primary">新增文章</a>
+      <h3>文章管理</h3>{
+      <a href="/back/posts/new" class="btn btn-primary">新增文章</a>
     </div>
 
     <!-- 分类筛选 -->
     <div class="mb-3">
-      <label for="categoryFilter" class="form-label">分类筛选:</label>
-      <select class="form-select" id="categoryFilter" onchange="filterPostsByCategory()">
-        <option value="">全部分类</option>
+      <label class="form-label">分类筛选:</label>
+      <div class="btn-group" role="group">
+        <a href="/back/posts/" class="btn btn-outline-primary active" data-category-id="">全部分类</a>
         {{range .Data.Categories}}
-        <option value="{{.ID}}">{{.Name}} ({{.ID}})</option>
+        <a href="/back/posts/{{.Name}}" class="btn btn-outline-primary" data-category-id="{{.ID}}">{{.Name}}</a>
         {{end}}
-      </select>
+      </div>
     </div>
 
     <!-- 文章列表 -->
     <div class="card-list" id="postCardList">
       {{range .Data.Posts}}
       <div class="post-card card mb-4">
-        <div class="position-relative">
-          <img src="/static/img/{{.CoverImg}}" alt="{{.Title}}" class="post-thumbnail">
-          <div class="post-flag">最新</div>
-        </div>
+        <a href="/back/post/{{.Slug}}" class="text-decoration-none">
+          <div class="position-relative">
+            <img src="/{{.CoverImg}}" alt="{{.Title}}" class="post-thumbnail">
+            <div class="post-flag">最新</div>
+          </div>
+        </a>
         <div class="card-body">
           <h5 class="card-title">{{.Title}}</h5>
           <p class="card-text">{{.Summary}}</p>
           <div class="d-flex justify-content-between align-items-center">
             <div>
-              <a href="/admin/category/posts/{{.Category.ID}}" class="badge bg-primary rounded-pill me-2">{{.Category.Name}}</a>
+              <a href="/back/category/posts/{{.Category.ID}}" class="badge bg-primary rounded-pill me-2">{{.Category.Name}}</a>
               <span class="text-muted me-3">{{.CreatedAt.Format "2006-01-02"}}</span>
               <span class="text-muted">阅读 {{.Views}} 次</span>
             </div>
             <div class="action-buttons">
-              <a href="/admin/post/edit/{{.ID}}" class="btn btn-sm btn-warning">编辑</a>
+              <a href="/back/postsedit/{{.ID}}" class="btn btn-sm btn-warning">编辑</a>
               <button class="btn btn-sm btn-danger" onclick="confirmDelete('post', {{.ID}})">删除</button>
             </div>
           </div>
@@ -209,7 +211,7 @@
         <td>{{.Role}}</td>
         <td>{{.CreatedAt.Format "2006-01-02"}}</td>
         <td class="action-buttons">
-          <a href="/admin/user/edit/{{.ID}}" class="btn btn-sm btn-warning">编辑</a>
+          <a href="/back/user/edit/{{.ID}}" class="btn btn-sm btn-warning">编辑</a>
           <button class="btn btn-sm btn-danger" onclick="confirmDelete('user', {{.ID}})">删除</button>
         </td>
       </tr>
@@ -242,7 +244,7 @@
         <td>{{.Post.Title}}</td>
         <td>{{.CreatedAt.Format "2006-01-02"}}</td>
         <td class="action-buttons">
-          <a href="/admin/comment/edit/{{.ID}}" class="btn btn-sm btn-warning">编辑</a>
+          <a href="/back/comment/edit/{{.ID}}" class="btn btn-sm btn-warning">编辑</a>
           <button class="btn btn-sm btn-danger" onclick="confirmDelete('comment', {{.ID}})">删除</button>
         </td>
       </tr>
@@ -274,7 +276,7 @@
 <div class="modal fade" id="addCategoryModal">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form action="/admin/category" method="POST">
+      <form action="/back/category" method="POST">
         <div class="modal-header">
           <h5 class="modal-title">新增分类</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -298,7 +300,7 @@
 <div class="modal fade" id="addUserModal">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form action="/admin/user" method="POST">
+      <form action="/back/user" method="POST">
         <div class="modal-header">
           <h5 class="modal-title">新增用户</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -315,7 +317,7 @@
           <div class="mb-3">
             <label class="form-label">角色</label>
             <select class="form-control" name="role">
-              <option value="admin">管理员</option>
+              <option value="back">管理员</option>
               <option value="editor">编辑</option>
               <option value="user">普通用户</option>
             </select>
@@ -334,7 +336,7 @@
 <div class="modal fade" id="addCommentModal">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form action="/admin/comment" method="POST">
+      <form action="/back/comment" method="POST">
         <div class="modal-header">
           <h5 class="modal-title">新增评论</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -378,8 +380,15 @@
   });
 
   // 分类筛选
-  function filterPostsByCategory() {
-    const selectedCategoryId = document.getElementById('categoryFilter').value;
+  document.querySelectorAll('[data-category-id]').forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault(); // 阻止默认跳转行为
+      const selectedCategoryId = e.target.dataset.categoryId;
+      filterPostsByCategory(selectedCategoryId);
+    });
+  });
+
+  function filterPostsByCategory(selectedCategoryId) {
     const cards = document.querySelectorAll('#postCardList .post-card');
 
     cards.forEach(card => {
@@ -394,12 +403,25 @@
         card.style.display = 'none';
       }
     });
+
+    // 更新“全部分类”按钮的选中状态
+    document.querySelectorAll('[data-category-id]').forEach(btn => {
+      if (btn.dataset.categoryId === selectedCategoryId) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+    // 如果没有选中任何分类，确保“全部分类”按钮处于选中状态
+    if (!selectedCategoryId) {
+      document.querySelector('[data-category-id=""]').classList.add('active');
+    }
   }
 
   // 删除确认
   function confirmDelete(type, id) {
     if (confirm(`确定要删除这个${type === 'post' ? '文章' : '分类'}吗？`)) {
-      fetch(`/admin/${type}/${id}`, { method: 'DELETE' })
+      fetch(`/back/${type}/${id}`, { method: 'DELETE' })
               .then(response => {
                 if (response.ok) location.reload();
               });
@@ -410,7 +432,7 @@
   function editCategory(id, name) {
     const modal = new bootstrap.Modal(document.getElementById('addCategoryModal'));
     const form = modal._element.querySelector('form');
-    form.action = `/admin/category/${id}`;
+    form.action = `/back/category/${id}`;
     form.querySelector('input[name="name"]').value = name;
     modal.show();
   }
@@ -418,7 +440,7 @@
   // 加载页面
   function loadPage(page) {
     currentPage = page;
-    fetch(`/admin/posts?page=${page}`)
+    fetch(`/back/posts?page=${page}`)
             .then(response => response.json())
             .then(data => {
               // 更新文章列表
@@ -437,12 +459,12 @@
                 <p class="card-text">${post.summary}</p>
                 <div class="d-flex justify-content-between align-items-center">
                   <div>
-                    <a href="/admin/category/posts/${post.category.id}" class="badge bg-primary rounded-pill me-2" data-category-id="${post.category.id}">${post.category.name}</a>
+                    <a href="/back/category/posts/${post.category.id}" class="badge bg-primary rounded-pill me-2" data-category-id="${post.category.id}">${post.category.name}</a>
                     <span class="text-muted me-3">${post.created_at}</span>
                     <span class="text-muted">阅读 ${post.views} 次</span>
                   </div>
                   <div class="action-buttons">
-                    <a href="/admin/post/edit/${post.id}" class="btn btn-sm btn-warning">编辑</a>
+                    <a href="/back/postsedit/${post.id}" class="btn btn-sm btn-warning">编辑</a>
                     <button class="btn btn-sm btn-danger" onclick="confirmDelete('post', ${post.id})">删除</button>
                   </div>
                 </div>

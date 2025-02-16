@@ -1,8 +1,8 @@
 package dao
 
 import (
+	"blog1/src/model"
 	"context"
-	"staging/src/model"
 )
 
 func (dao *Dao) Test() (test model.Test, err error) {

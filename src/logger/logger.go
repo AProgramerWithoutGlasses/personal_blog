@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"blog1/src/pkg/settings"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -11,7 +12,6 @@ import (
 	"net/http/httputil"
 	"os"
 	"runtime/debug"
-	"staging/src/pkg/settings"
 	"strings"
 	"time"
 )

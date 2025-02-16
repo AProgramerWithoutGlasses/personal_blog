@@ -1,9 +1,9 @@
 package server
 
 import (
+	"blog1/src/pkg/settings"
+	"blog1/src/service"
 	"github.com/gin-gonic/gin"
-	"staging/src/pkg/settings"
-	"staging/src/service"
 )
 
 var svc *service.Service
