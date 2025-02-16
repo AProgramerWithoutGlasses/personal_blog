@@ -13,11 +13,13 @@ type response struct {
 }
 
 func Success(c *gin.Context, name string, data any) {
-	c.HTML(http.StatusOK, name, response{
+	response1 := response{
 		Code: SuccessCode,
 		Msg:  "",
 		Data: data,
-	})
+	}
+	c.HTML(http.StatusOK, name, response1)
+	fmt.Printf("%#v\n", response1)
 	c.Abort()
 }
 

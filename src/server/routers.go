@@ -16,13 +16,24 @@ func InitRouter() *gin.Engine {
 	// 加载静态资源
 	r.Static("/static", "./static")
 
-	r.GET("/test", test)
 	r.POST("/login", loginFrontHandler("login.html"))
 	r.GET("/login", loginFrontView("login.html"))
 	r.POST("/register", registerHandler("register.html"))
 	r.GET("/register", registerView("register.html"))
-	r.GET("/index", indexView("index.html"))
-	r.GET("/index/post/:slug", postView("index.html"))
+
+	// 前台
+	indexRouter := r.Group("/index")
+	indexRouter.GET("", indexView("index.html"))
+	indexRouter.GET("/post/:slug", postView("post.html"))
+	indexRouter.GET("/category/:name", categoryView("category.html"))
+
+	// 后台
+	backRouter := r.Group("/back")
+	bpRouter := backRouter.Group("/post")
+	bpRouter.POST("/") // 增
+	bpRouter.DELETE("/:id")
+	bpRouter.PUT("/:id")              // 改
+	bpRouter.GET("/", GetAllBackData) //posts
 
 	return r
 }

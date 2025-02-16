@@ -35,3 +35,18 @@ func postView(name string) gin.HandlerFunc {
 	}
 
 }
+
+func categoryView(name string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// 动态路由
+		categoryName := c.Param("name")
+
+		categoryModel, err := svc.CategoryService(categoryName)
+		if err != nil {
+			fmt.Println("svc.PostService() err: ", err)
+			return
+		}
+
+		response.Success(c, name, categoryModel)
+	}
+}

@@ -13,21 +13,18 @@ func (s *Service) IndexService() (res model.IndexModel, err error) {
 		fmt.Println("get posts err:", err)
 		return
 	}
-	fmt.Println("posts:", posts)
 
 	base, err := s.dao.GetBase()
 	if err != nil {
 		fmt.Println("get base err:", err)
 		return
 	}
-	fmt.Println("base:", base)
 
 	categories, err := s.dao.GetCategories()
 	if err != nil {
 		fmt.Println("get categories err:", err)
 		return
 	}
-	fmt.Println("categories:", categories)
 
 	res = model.IndexModel{
 		Posts:      posts,
@@ -66,14 +63,12 @@ func (s *Service) PostService(slug string) (postModel model.PostModel, err error
 		fmt.Println("get base err:", err)
 		return
 	}
-	fmt.Println("base:", base)
 
 	categories, err := s.dao.GetCategories()
 	if err != nil {
 		fmt.Println("get categories err:", err)
 		return
 	}
-	fmt.Println("categories:", categories)
 
 	postModel = model.PostModel{
 		Post:       post,
@@ -83,7 +78,41 @@ func (s *Service) PostService(slug string) (postModel model.PostModel, err error
 		Categories: categories,
 	}
 
-	fmt.Println("postModel:", postModel)
+	return
+}
+
+func (s *Service) CategoryService(categoryName string) (categoryModel model.CategoryModel, err error) {
+	currentCategory, err := s.dao.GetCategoryByName(categoryName)
+	if err != nil {
+		fmt.Println("get category err:", err)
+		return
+	}
+
+	currentPosts, err := s.dao.GetPostsByCategory(categoryName)
+	if err != nil {
+		fmt.Println("get posts err:", err)
+		return
+	}
+
+	base, err := s.dao.GetBase()
+	if err != nil {
+		fmt.Println("get base err:", err)
+		return
+	}
+
+	categories, err := s.dao.GetCategories()
+	if err != nil {
+		fmt.Println("get categories err:", err)
+		return
+	}
+
+	categoryModel = model.CategoryModel{
+		CurrentCategory: currentCategory,
+		CurrentPosts:    currentPosts,
+		Base:            base,
+		Categories:      categories,
+		PostsCount:      len(currentPosts),
+	}
 
 	return
 }
