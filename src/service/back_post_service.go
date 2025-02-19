@@ -116,3 +116,49 @@ func (s *Service) BackDelPostService(slug string) (err error) {
 	}
 	return
 }
+
+func (s *Service) BackEditPostViewService(slug string) (backEditPostModel model.BackEditPostModel, err error) {
+	post, err := s.dao.GetPostBySlug(slug)
+	if err != nil {
+		fmt.Println("GetPostBySlug() err:", err)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = nil
+		} else {
+			return
+		}
+	}
+
+	base, err := s.dao.GetBase()
+	if err != nil {
+		fmt.Println("get base err:", err)
+		return
+	}
+
+	categories, err := s.dao.GetCategories()
+	if err != nil {
+		fmt.Println("get categories err:", err)
+		return
+	}
+
+	backEditPostModel = model.BackEditPostModel{
+		Post:       post,
+		Base:       base,
+		Categories: categories,
+	}
+
+	return
+}
+
+func (s *Service) BackEditPostService(backEditPostModel gorm_model.Post, slug string) (err error) {
+	err = s.dao.UpdatePost(backEditPostModel, slug)
+	if err != nil {
+		fmt.Println("s.dao.UpdatePost() err:", err)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = nil
+		} else {
+			return
+		}
+	}
+
+	return
+}

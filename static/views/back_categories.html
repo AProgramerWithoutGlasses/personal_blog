@@ -1,0 +1,154 @@
+{{define "back_categories"}}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分类管理 - {{.Data.Base.Title}}</title>
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            padding: 48px 0 0;
+            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+            width: 220px;
+            background-color: #f8f9fa;
+        }
+
+        .main-content {
+            margin-left: 220px;
+            padding: 20px;
+        }
+
+        .category-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 15px;
+        }
+        .category-card {
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .action-buttons {
+            margin-top: 10px;
+        }
+
+        /* 其他样式保持不变 */
+    </style>
+</head>
+<body>
+<!-- 侧边栏 -->
+<nav class="sidebar bg-light">
+    <div class="px-3">
+        <h4 class="mt-3">后台管理</h4>
+        <div class="list-group mt-3">
+            <a href="" class="list-group-item list-group-item-action active">文章管理</a>
+            <a href="../categories" class="list-group-item list-group-item-action">分类管理</a>
+            <a href="users" class="list-group-item list-group-item-action">用户管理</a>
+            <a href="/comments" class="list-group-item list-group-item-action">评论管理</a>
+            <a href="/settings" class="list-group-item list-group-item-action">系统设置</a>
+        </div>
+    </div>
+</nav>
+
+<div class="main-content">
+    <div class="category-container">
+        <!-- 新增分类模态框 -->
+        <div class="modal fade" id="addCategoryModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="/back/categories" method="POST">
+                        <div class="modal-header">
+                            <h5 class="modal-title">新增分类</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">分类名称</label>
+                                <input type="text" class="form-control" name="name" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                            <button type="submit" class="btn btn-primary">保存</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 分类列表 -->
+        <div class="d-flex justify-content-between mb-4">
+            <h3>分类管理</h3>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">新增分类</button>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {{range .Data.Categories}}
+            <div class="col">
+                <div class="category-card">
+                    <h5 class="card-title">{{.Name}}</h5>
+                    <p class="card-text">文章数量: {{len .Posts}}</p>
+                    <div class="action-buttons">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editCategoryModal{{.ID}}">编辑</button>
+                        <button type="button" class="btn btn-danger" onclick="confirmDelete('category', {{.ID}})">删除</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 编辑分类模态框 -->
+            <div class="modal fade" id="editCategoryModal{{.ID}}" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form action="/back/categories/{{.ID}}" method="POST">
+                            <!-- 隐藏字段，标识请求类型为 PUT -->
+                            <input type="hidden" name="request_method" value="PUT">
+                            <div class="modal-header">
+                                <h5 class="modal-title">编辑分类</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label">分类名称</label>
+                                    <input type="text" class="form-control" name="name" value="{{.Name}}" required>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                                <button type="submit" class="btn btn-primary">保存</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {{end}}
+        </div>
+    </div>
+</div>
+
+<script src="/static/js/bootstrap.bundle.min.js"></script>
+<script>
+    // 删除确认对话框
+    function confirmDelete(type, id) {
+        if (confirm(`确定要删除这个${type === 'category' ? '分类' : '其他'}吗？`)) {
+            fetch(`/back/${type}/${id}`, { method: 'DELETE' })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload(); // 刷新页面
+                    } else {
+                        alert('删除失败，请稍后重试！');
+                    }
+                });
+        }
+    }
+</script>
+</body>
+</html>
+{{end}}

@@ -14,3 +14,14 @@ type BackPostModel struct {
 	Post gorm_model.Post
 	Base gorm_model.Base
 }
+
+type BackEditPostModel struct {
+	Post       gorm_model.Post
+	Base       gorm_model.Base
+	Categories []gorm_model.Category
+}
+
+type BackCategoriesModel struct {
+	Categories []gorm_model.Category
+	Base       gorm_model.Base
+}

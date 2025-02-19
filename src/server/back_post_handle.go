@@ -58,7 +58,7 @@ func BackNewPost(c *gin.Context) {
 	response.SuccessWithMsg(c, "new_post", "发布成功", backAllData)
 }
 
-func NewPostView(c *gin.Context) {
+func BackNewPostView(c *gin.Context) {
 	backAllData, err := svc.BackAllDateService("")
 	if err != nil {
 		zap.L().Error("NewPostView() svc.BackAllDateService() err: ", zap.Error(err))
@@ -93,5 +93,42 @@ func BackDelPost(c *gin.Context) {
 	}
 
 	response.SuccessWithMsg(c, "back_post", "删除成功", "")
+
+}
+
+func BackEditPost(c *gin.Context) {
+	slug := c.Param("slug")
+
+	editPostModel := gorm_model.Post{}
+	err := c.ShouldBind(&editPostModel)
+	if err != nil {
+		zap.L().Error("BackEditPostView() c.ShouldBind(&editPostModel) err: ", zap.Error(err))
+		response.Fail(c, "back_post_edit", response.ErrServer)
+		return
+	}
+	fmt.Printf("%#v\n", editPostModel)
+
+	err = svc.BackEditPostService(editPostModel, slug)
+	if err != nil {
+		zap.L().Error("BackEditPostView() svc.BackEditPostService() err: ", zap.Error(err))
+		response.Fail(c, "back_post_edit", response.ErrServer)
+		return
+	}
+
+	response.SuccessWithMsg(c, "back_post_edit", "修改成功", "")
+
+}
+
+func BackEditPostView(c *gin.Context) {
+	slug := c.Param("slug")
+
+	postModel, err := svc.BackEditPostViewService(slug)
+	if err != nil {
+		zap.L().Error("BackEditPostView() svc.PostService() err: ", zap.Error(err))
+		response.Fail(c, "back_post_edit", response.ErrServer)
+		return
+	}
+
+	response.Success(c, "back_post_edit", postModel)
 
 }

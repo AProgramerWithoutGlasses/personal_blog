@@ -77,11 +77,10 @@
       </a>
     </div>
     <div class="action-buttons">
-      <a href="/back/postsedit/{{.Data.Post.ID}}" class="btn btn-sm btn-warning">编辑文章</a>
-      <button class="btn btn-sm btn-danger" onclick="confirmDelete('posts', {{.Data.Post.Slug}})">删除文章</button>
+      <a class="btn btn-sm btn-warning" href="/back/posts/edit/{{.Data.Post.Slug}}">编辑文章</a>
+      <button class="btn btn-sm btn-danger" onclick="confirmDelete('posts', '{{.Data.Post.Slug}}')">删除文章</button>
     </div>
   </header>
-
 
   <!-- 文章内容 -->
   <article class="article-content">
@@ -90,19 +89,18 @@
 
   <!-- 评论区域 -->
   <section class="comment-section">
-    <h4>评论（{{len .Data.Post.Comments}}）</h4>
+    <h4 id="commentCount">评论（{{len .Data.Post.Comments}}）</h4>
     <!-- 评论列表 -->
     <div class="comment-list">
       {{range .Data.Post.Comments}}
-      <div class="comment-item">
+      <div class="comment-item" data-comment-id="{{.ID}}">
         <div class="d-flex justify-content-between">
           <div>
             <strong>{{.User.Username}}</strong>
             <span class="text-muted ms-2">{{.CreatedAt.Format "2006-01-02 15:04"}}</span>
           </div>
           <div class="action-buttons">
-            <button class="btn btn-sm btn-danger"
-                    onclick="confirmDelete('comment', {{.ID}})">
+            <button class="btn btn-sm btn-danger" onclick="deleteComment({{.ID}})">
               删除
             </button>
           </div>
@@ -116,12 +114,90 @@
 
 <script src="/static/js/bootstrap.bundle.min.js"></script>
 <script>
-  // 删除确认函数
+  // 初始化评论数据
+  const comments = [];
+  window.addEventListener("DOMContentLoaded", () => {
+    // 将服务器返回的评论数据存储到 comments 数组中
+    const serverComments = {{.Data.Post.Comments}};
+    comments.push(...serverComments);
+    // 初始渲染评论数量
+    updateCommentCount();
+  });
+
+  // 更新评论数量
+  function updateCommentCount() {
+    const countElement = document.getElementById("commentCount");
+    if (countElement) {
+      countElement.textContent = `评论（${comments.length}）`;
+    }
+  }
+
+  // 删除评论函数
+  async function deleteComment(commentId) {
+    if (!confirm("确定要删除这条评论吗？")) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/back/comments/${commentId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        // 成功后从 comments 数组中移除对应的评论
+        const index = comments.findIndex(comment => comment.ID === parseInt(commentId));
+        if (index !== -1) {
+          comments.splice(index, 1);
+          // 更新评论数量
+          updateCommentCount();
+          // 重新渲染评论列表
+          renderComments();
+        }
+      } else {
+        console.error("删除评论失败：", response.statusText);
+        alert("删除评论失败，请稍后重试");
+      }
+    } catch (error) {
+      console.error("删除评论失败：", error);
+      alert("删除评论失败，请稍后重试");
+    }
+  }
+
+  // 重新渲染评论列表
+  function renderComments() {
+    const commentList = document.querySelector(".comment-list");
+    if (commentList) {
+      commentList.innerHTML = "";
+      comments.forEach(comment => {
+        const commentItem = document.createElement("div");
+        commentItem.className = "comment-item";
+        commentItem.setAttribute("data-comment-id", comment.ID);
+        commentItem.innerHTML = `
+          <div class="d-flex justify-content-between">
+            <div>
+              <strong>${comment.User.Username}</strong>
+              <span class="text-muted ms-2">${comment.CreatedAt.Format("2006-01-02 15:04")}</span>
+            </div>
+            <div class="action-buttons">
+              <button class="btn btn-sm btn-danger" onclick="deleteComment(${comment.ID})">
+                删除
+              </button>
+            </div>
+          </div>
+          <p class="mt-2 mb-0">${comment.Content}</p>
+        `;
+        commentList.appendChild(commentItem);
+      });
+    }
+  }
+
+  // 删除文章函数
   function confirmDelete(type, id) {
-    if (confirm(`确定要删除这篇${type === 'post' ? '文章' : '评论'}吗？`)) {
+    if (confirm(`确定要删除这个${type === 'posts' ? '文章' : '其他'}吗？`)) {
       fetch(`/back/${type}/${id}`, { method: 'DELETE' })
               .then(response => {
                 if (response.ok) {
+                  alert("删除成功")
                   window.location.href = '/back/posts'; // 删除成功后跳转到 /back/posts
                 }
               });
@@ -135,6 +211,8 @@
     img.style.borderRadius = '6px';
   });
 </script>
+
+
 </body>
 </html>
 {{end}}

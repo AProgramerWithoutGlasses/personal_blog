@@ -1,0 +1,137 @@
+{{define "back_post_edit"}}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>编辑文章 - {{.Data.Base.Title}}</title>
+  <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .article-container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 15px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .action-buttons {
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+<!-- 导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <a class="navbar-brand" href="/">{{.Data.Base.Title}}</a>
+    <div class="d-flex">
+      <a href="/back/posts" class="btn btn-sm btn-outline-secondary">返回文章列表</a>
+    </div>
+  </div>
+</nav>
+
+<div class="article-container">
+  <!-- 文章编辑表单 -->
+  <form id="editPostForm" action="/back/posts/{{.Data.Post.Slug}}" method="POST" enctype="multipart/form-data">
+    <!-- 隐藏字段，标识请求类型为 PUT -->
+    <input type="hidden" name="request_method" value="PUT">
+
+    <div class="mb-3">
+      <label class="form-label">标题</label>
+      <input type="text" class="form-control" name="title" required value="{{.Data.Post.Title}}">
+    </div>
+    <div class="mb-3">
+      <label class="form-label">封面图片</label>
+      <input type="file" class="form-control" name="coverImg" accept="image/*">
+      <img src="/{{$coverImg := .Data.Post.CoverImg}}{{$coverImg}}" alt="当前封面" class="img-thumbnail mt-2" style="max-width: 200px;">
+    </div>
+
+    <!-- 所属分类 -->
+    <div class="mb-3">
+      <label class="form-label">所属分类</label>
+      <select class="form-select" name="categoryID" aria-label="选择分类">
+        {{range .Data.Categories}}
+        <option value="{{.ID}}" {{if eq .ID $.Data.Post.Category.ID}}selected{{end}}>{{.Name}}</option>
+        {{end}}
+      </select>
+    </div>
+
+    <!-- 摘要 -->
+    <div class="mb-3">
+      <label class="form-label">摘要</label>
+      <textarea class="form-control" name="summary" rows="3">{{.Data.Post.Summary}}</textarea>
+    </div>
+
+    <!-- 内容 -->
+    <div class="mb-3">
+      <label class="form-label">内容</label>
+      <textarea class="form-control" name="content" rows="10" required>{{.Data.Post.Content}}</textarea>
+    </div>
+
+    <!-- 动态图片上传预览 -->
+    <div class="preview" style="display: none;">
+      <img src="" alt="预览图片" class="img-fluid" style="max-width: 50%; margin-top: 10px;">
+    </div>
+
+    <div class="action-buttons">
+      <button type="submit" class="btn btn-primary">保存文章</button>
+      <button type="button" onclick="window.history.back()" class="btn btn-secondary">取消</button>
+    </div>
+  </form>
+</div>
+
+<script src="/static/js/bootstrap.bundle.min.js"></script>
+<script>
+  // 图片上传预览处理
+  document.querySelectorAll('input[name="coverImg"]').forEach(input => {
+    input.addEventListener('change', function (e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const preview = document.querySelector('.preview');
+          preview.style.display = 'block';
+          preview.querySelector('img').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  });
+
+  // 拦截表单提交，使用 fetch 发起 PUT 请求
+  document.getElementById("editPostForm").addEventListener("submit", async function(e) {
+    e.preventDefault(); // 阻止默认提交行为
+    const form = e.target;
+    const url = form.action;
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch(url, {
+        method: "PUT",
+        body: formData
+      });
+
+      if (response.ok) {
+        alert("文章更新成功！");
+        window.location.href = "/back/posts/" + "{{.Data.Post.Slug}}";
+      } else {
+        const errorText = await response.text();
+        alert("文章更新失败：" + errorText);
+      }
+    } catch (error) {
+      console.error("更新文章失败：", error);
+      alert("文章更新失败，请稍后重试！");
+    }
+  });
+
+  // 消息提示
+  var msg = "{{.Msg}}"; // 获取 Msg 的值
+  if (msg !== "") {
+    alert(msg); // 弹窗显示 Msg 的值
+    window.location.reload();
+  }
+</script>
+</body>
+</html>
+{{end}}
