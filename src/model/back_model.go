@@ -9,3 +9,8 @@ type BackAllDataModel struct {
 	Comments   []gorm_model.Comment
 	Users      []gorm_model.User
 }
+
+type BackPostModel struct {
+	Post gorm_model.Post
+	Base gorm_model.Base
+}

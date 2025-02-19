@@ -4,8 +4,10 @@ import (
 	"blog1/src/model"
 	"blog1/src/model/gorm_model"
 	"blog1/src/utils"
+	"errors"
 	"fmt"
 	"github.com/gosimple/slug"
+	"gorm.io/gorm"
 	"mime/multipart"
 )
 
@@ -79,7 +81,38 @@ func (s *Service) NewPostService(postModel gorm_model.Post, file multipart.File,
 
 }
 
-func (s *Service) GetBackPostService(slug string) (post gorm_model.Post, err error) {
-	post, err = s.dao.GetPostByslug(slug)
+func (s *Service) GetBackPostService(slug string) (backPostModel model.BackPostModel, err error) {
+	post, err := s.dao.GetPostBySlug(slug)
+	if err != nil {
+		fmt.Println("GetPostBySlug() err:", err)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = nil
+		} else {
+			return
+		}
+	}
+
+	base, err := s.dao.GetBase()
+	if err != nil {
+		fmt.Println("get base err:", err)
+		return
+	}
+
+	backPostModel = model.BackPostModel{
+		Post: post,
+		Base: base,
+	}
+
+	return
+}
+
+func (s *Service) BackDelPostService(slug string) (err error) {
+	err = s.dao.DeletePostBySlug(slug)
+	if err != nil {
+		fmt.Println("BackDelPostService() DeletePostBySlug() err:", err)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = nil
+		}
+	}
 	return
 }

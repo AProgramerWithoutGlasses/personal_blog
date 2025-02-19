@@ -1,0 +1,140 @@
+{{define "back_post"}}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{.Data.Post.Title}} - {{.Data.Base.Title}}</title>
+  <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .article-container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 15px;
+    }
+    .article-header {
+      margin-bottom: 30px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 20px;
+    }
+    .article-meta {
+      color: #6c757d;
+      font-size: 0.9em;
+    }
+    .article-cover {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+    .article-content {
+      line-height: 1.8;
+      font-size: 16px;
+    }
+    .comment-section {
+      margin-top: 50px;
+      padding: 30px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+    }
+    .comment-list {
+      margin-top: 30px;
+    }
+    .comment-item {
+      padding: 15px;
+      background: white;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .action-buttons {
+      margin-top: 20px;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+<!-- 导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <a class="navbar-brand" href="/">{{.Data.Base.Title}}</a>
+    <div class="d-flex">
+      <a href="./" class="btn btn-sm btn-outline-secondary">返回后台首页</a>
+    </div>
+  </div>
+</nav>
+
+<div class="article-container">
+  <!-- 文章头部 -->
+  <header class="article-header">
+    <h1 class="display-4">{{.Data.Post.Title}}</h1>
+    <div class="article-meta">
+      <span class="me-3">作者：{{.Data.Base.Author}}</span>
+      <span class="me-3">发布日期：{{.Data.Post.CreatedAt.Format "2006-01-02"}}</span>
+      <a href="/category/{{.Data.Post.Category.Name}}" class="badge bg-primary">
+        {{.Data.Post.Category.Name}}
+      </a>
+    </div>
+    <div class="action-buttons">
+      <a href="/back/postsedit/{{.Data.Post.ID}}" class="btn btn-sm btn-warning">编辑文章</a>
+      <button class="btn btn-sm btn-danger" onclick="confirmDelete('posts', {{.Data.Post.Slug}})">删除文章</button>
+    </div>
+  </header>
+
+
+  <!-- 文章内容 -->
+  <article class="article-content">
+    {{.Data.Post.Content}}
+  </article>
+
+  <!-- 评论区域 -->
+  <section class="comment-section">
+    <h4>评论（{{len .Data.Post.Comments}}）</h4>
+    <!-- 评论列表 -->
+    <div class="comment-list">
+      {{range .Data.Post.Comments}}
+      <div class="comment-item">
+        <div class="d-flex justify-content-between">
+          <div>
+            <strong>{{.User.Username}}</strong>
+            <span class="text-muted ms-2">{{.CreatedAt.Format "2006-01-02 15:04"}}</span>
+          </div>
+          <div class="action-buttons">
+            <button class="btn btn-sm btn-danger"
+                    onclick="confirmDelete('comment', {{.ID}})">
+              删除
+            </button>
+          </div>
+        </div>
+        <p class="mt-2 mb-0">{{.Content}}</p>
+      </div>
+      {{end}}
+    </div>
+  </section>
+</div>
+
+<script src="/static/js/bootstrap.bundle.min.js"></script>
+<script>
+  // 删除确认函数
+  function confirmDelete(type, id) {
+    if (confirm(`确定要删除这篇${type === 'post' ? '文章' : '评论'}吗？`)) {
+      fetch(`/back/${type}/${id}`, { method: 'DELETE' })
+              .then(response => {
+                if (response.ok) {
+                  window.location.href = '/back/posts'; // 删除成功后跳转到 /back/posts
+                }
+              });
+    }
+  }
+
+  // 图片预览处理
+  document.querySelectorAll('.article-content img').forEach(img => {
+    img.classList.add('img-fluid');
+    img.style.margin = '20px 0';
+    img.style.borderRadius = '6px';
+  });
+</script>
+</body>
+</html>
+{{end}}

@@ -3,25 +3,26 @@ package server
 import (
 	"blog1/src/model/gorm_model"
 	"blog1/src/pkg/response"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
 
-func GetAllBackData(c *gin.Context) {
+func BackAllData(c *gin.Context) {
 	categoryName := c.Param("category_name")
 
 	backAllData, err := svc.BackAllDateService(categoryName)
 	if err != nil {
 		zap.L().Error("svc.BackAllDateService() err: ", zap.Error(err))
-		response.Fail(c, "index_back", response.ErrServer)
+		response.Fail(c, "back_index", response.ErrServer)
 		return
 	}
 
-	response.Success(c, "index_back", backAllData)
+	response.Success(c, "back_index", backAllData)
 	return
 }
 
-func NewPost(c *gin.Context) {
+func BackNewPost(c *gin.Context) {
 	// 接收请求
 	postModel := gorm_model.Post{}
 	err := c.ShouldBind(&postModel)
@@ -68,10 +69,29 @@ func NewPostView(c *gin.Context) {
 	response.Success(c, "new_post", backAllData)
 }
 
-func GetPostBack(c *gin.Context) {
-	//slug := c.Param("slug")
-	//
-	//GetBackPostService
-	//
-	//response.Success(c, "new_post", backAllData)
+func BackPost(c *gin.Context) {
+	slug := c.Param("slug")
+
+	backPostModel, err := svc.GetBackPostService(slug)
+	if err != nil {
+
+		fmt.Println("svc.GetBackPostService() err: ", zap.Error(err))
+		return
+	}
+
+	response.Success(c, "back_post", backPostModel)
+}
+
+func BackDelPost(c *gin.Context) {
+	slug := c.Param("slug")
+
+	err := svc.BackDelPostService(slug)
+	if err != nil {
+		zap.L().Error("svc.BackDelPostService() err: ", zap.Error(err))
+		response.Fail(c, "back_post", response.ErrServer)
+		return
+	}
+
+	response.SuccessWithMsg(c, "back_post", "删除成功", "")
+
 }

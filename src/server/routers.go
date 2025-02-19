@@ -16,7 +16,7 @@ func InitRouter() *gin.Engine {
 	// 加载静态资源
 	r.Static("/static", "./static")
 
-	r.POST("/login", loginFrontHandler("login.html"))
+	r.POST("/login", loginFrontHandler)
 	r.GET("/login", loginFrontView("login.html"))
 	r.POST("/register", registerHandler("register.html"))
 	r.GET("/register", registerView("register.html"))
@@ -30,16 +30,15 @@ func InitRouter() *gin.Engine {
 	// 后台
 	backRouter := r.Group("/back")
 	bpRouter := backRouter.Group("/posts")
-	bpRouter.POST("/new", NewPost)      // 增
-	bpRouter.DELETE("/:id")             // 删
-	bpRouter.PUT("/:id")                // 改
-	bpRouter.GET("/", GetAllBackData)   // 查所有
-	bpRouter.GET("/:slug", GetPostBack) // 查单篇
+	bpRouter.POST("/new", BackNewPost)     // 增                                                                                                                                                                                                                                                            `
+	bpRouter.DELETE("/:slug", BackDelPost) // 删
+	bpRouter.PUT("/:slug")                 // 改
+	bpRouter.GET("/", BackAllData)         // 查所有
+	bpRouter.GET("/:slug", BackPost)       // 查单篇
+	bpRouter.GET("/new", NewPostView)      //
 
-	// todo
-	bpRouter.GET("/:category_name", GetAllBackData) // 查单篇
-
-	bpRouter.GET("/new", NewPostView) //
+	bcRouter := backRouter.Group("/categories")
+	bcRouter.GET("/:category_name", BackAllData) // 查单篇
 
 	return r
 }

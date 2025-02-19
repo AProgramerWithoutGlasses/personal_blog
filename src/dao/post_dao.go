@@ -36,9 +36,13 @@ func (dao *Dao) GetNextPost(createdAt time.Time) (nextPost gorm_model.Post, err 
 	return
 }
 
-func (dao *Dao) GetPostByslug(slug string) (post gorm_model.Post, err error) {
+func (dao *Dao) GetPostBySlug(slug string) (post gorm_model.Post, err error) {
 	err = dao.db.Preload("Comments").Preload("Category").First(&post, "slug = ?", slug).Error
 	return
+}
+
+func (dao *Dao) DeletePostBySlug(slug string) (err error) {
+	return dao.db.Delete(&gorm_model.Post{}, "slug = ?", slug).Error
 }
 
 func (dao *Dao) GetBase() (base gorm_model.Base, err error) {

@@ -1,4 +1,4 @@
-{{define "index_back"}}
+{{define "back_index"}}
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -87,6 +87,10 @@
       color: white;
       border: none;
     }
+
+    .btn-group a.active {
+      box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.1);
+    }
   </style>
 </head>
 <body>
@@ -109,7 +113,7 @@
   <!-- 文章管理 -->
   <div id="posts">
     <div class="d-flex justify-content-between mb-4">
-      <h3>文章管理</h3>{
+      <h3>文章管理</h3>
       <a href="/back/posts/new" class="btn btn-primary">新增文章</a>
     </div>
 
@@ -117,9 +121,9 @@
     <div class="mb-3">
       <label class="form-label">分类筛选:</label>
       <div class="btn-group" role="group">
-        <a href="/back/posts/" class="btn btn-outline-primary active" data-category-id="">全部分类</a>
+        <a href="/back/posts/" onclick="changeActive()" class="btn btn-outline-primary active" data-category-id="">全部分类</a>
         {{range .Data.Categories}}
-        <a href="/back/posts/{{.Name}}" class="btn btn-outline-primary" data-category-id="{{.ID}}">{{.Name}}</a>
+        <a href="/back/categories/{{.Name}}" onclick="changeActive()" class="btn btn-outline-primary" data-category-id="{{.ID}}">{{.Name}}</a>
         {{end}}
       </div>
     </div>
@@ -128,7 +132,7 @@
     <div class="card-list" id="postCardList">
       {{range .Data.Posts}}
       <div class="post-card card mb-4">
-        <a href="/back/post/{{.Slug}}" class="text-decoration-none">
+        <a href="{{.Slug}}" class="text-decoration-none">
           <div class="position-relative">
             <img src="/{{.CoverImg}}" alt="{{.Title}}" class="post-thumbnail">
             <div class="post-flag">最新</div>
@@ -379,6 +383,8 @@
     });
   });
 
+
+
   // 分类筛选
   document.querySelectorAll('[data-category-id]').forEach(item => {
     item.addEventListener('click', (e) => {
@@ -387,6 +393,28 @@
       filterPostsByCategory(selectedCategoryId);
     });
   });
+
+  function changeActive() {
+    // 获取所有 a 标签
+    const links = document.querySelectorAll('.btn-outline-primary');
+    console.log(11111)
+    if (links.length === 0) return; // 没有找到按钮时退出
+
+    // 遍历每个 a 标签并绑定点击事件
+    links.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault(); // 阻止默认的链接跳转行为
+
+        // 移除所有 a 标签的 active 类
+        links.forEach(l => l.classList.remove('active'));
+
+        // 为当前点击的 a 标签添加 active 类
+        this.classList.add('active');
+
+      });
+    });
+  }
+
 
   function filterPostsByCategory(selectedCategoryId) {
     const cards = document.querySelectorAll('#postCardList .post-card');
@@ -404,17 +432,20 @@
       }
     });
 
-    // 更新“全部分类”按钮的选中状态
-    document.querySelectorAll('[data-category-id]').forEach(btn => {
+    // 更新分类按钮的选中状态
+    document.querySelectorAll('.btn-group a').forEach(btn => {
       if (btn.dataset.categoryId === selectedCategoryId) {
         btn.classList.add('active');
       } else {
         btn.classList.remove('active');
       }
     });
+
     // 如果没有选中任何分类，确保“全部分类”按钮处于选中状态
     if (!selectedCategoryId) {
-      document.querySelector('[data-category-id=""]').classList.add('active');
+      document.querySelector('.btn-group a[data-category-id=""]').classList.add('active');
+    } else {
+      document.querySelector('.btn-group a[data-category-id=""]').classList.remove('active');
     }
   }
 

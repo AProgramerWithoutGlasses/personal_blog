@@ -36,7 +36,7 @@ func (s *Service) IndexService() (res model.IndexModel, err error) {
 }
 
 func (s *Service) PostService(slug string) (postModel model.PostModel, err error) {
-	post, err := s.dao.GetPostByslug(slug)
+	post, err := s.dao.GetPostBySlug(slug)
 	if err != nil {
 		fmt.Println("get post err:", err)
 		return
