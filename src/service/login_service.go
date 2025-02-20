@@ -2,8 +2,10 @@ package service
 
 import (
 	"blog1/src/model"
+	"blog1/src/pkg/response"
 	"errors"
 	"fmt"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -17,8 +19,13 @@ func (s *Service) LoginService(loginModel model.LoginReqModel) (myPermission str
 		return
 	}
 
-	if loginModel.Password != user.Password {
-		err = model.ErrInvalidPassword
+	// 校验密码是否正确
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginModel.Password))
+	if err != nil {
+		// 密码错误
+		fmt.Println("LoginService() bcrypt.CompareHashAndPassword() err: ", err.Error())
+		err = errors.New(response.ErrInvalidPassword.Msg())
+		return
 	}
 
 	myPermission = user.Permission

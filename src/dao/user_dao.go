@@ -24,3 +24,11 @@ func (dao *Dao) ExistedUser(username string) (bool, error) {
 func (dao *Dao) InsertUser(registerModel gorm_model.User) (err error) {
 	return dao.db.Create(&registerModel).Error
 }
+
+func (dao *Dao) EditUser(user gorm_model.User) (err error) {
+	err = dao.db.Model(gorm_model.User{}).
+		Where("id = ?", user.ID).
+		Select("Name", "Age", "Gender", "Permission"). // 显式指定要更新的字段
+		Updates(&user).Error
+	return
+}

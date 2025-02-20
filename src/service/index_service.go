@@ -16,7 +16,7 @@ func (s *Service) IndexService() (res model.IndexModel, err error) {
 
 	base, err := s.dao.GetBase()
 	if err != nil {
-		fmt.Println("get base err:", err)
+		fmt.Println("s.dao.GetBase() err: ", err)
 		return
 	}
 
@@ -60,7 +60,7 @@ func (s *Service) PostService(slug string) (postModel model.PostModel, err error
 
 	base, err := s.dao.GetBase()
 	if err != nil {
-		fmt.Println("get base err:", err)
+		fmt.Println("s.dao.GetBase() err: ", err)
 		return
 	}
 
@@ -96,7 +96,7 @@ func (s *Service) CategoryService(categoryName string) (categoryModel model.Cate
 
 	base, err := s.dao.GetBase()
 	if err != nil {
-		fmt.Println("get base err:", err)
+		fmt.Println("s.dao.GetBase() err: ", err)
 		return
 	}
 

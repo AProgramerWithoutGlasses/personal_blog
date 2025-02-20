@@ -29,7 +29,7 @@ func (s *Service) BackAllDateService(categoryName string) (allBackDate model.Bac
 
 	base, err := s.dao.GetBase()
 	if err != nil {
-		fmt.Println("get base err:", err)
+		fmt.Println("s.dao.GetBase() err: ", err)
 		return
 	}
 
@@ -52,11 +52,12 @@ func (s *Service) BackAllDateService(categoryName string) (allBackDate model.Bac
 	}
 
 	allBackDate = model.BackAllDataModel{
-		Posts:      posts,
-		Base:       base,
-		Categories: categories,
-		Comments:   comments,
-		Users:      users,
+		Posts:       posts,
+		Base:        base,
+		Categories:  categories,
+		Comments:    comments,
+		Users:       users,
+		CurrentPage: "posts",
 	}
 	return
 }
@@ -94,13 +95,14 @@ func (s *Service) GetBackPostService(slug string) (backPostModel model.BackPostM
 
 	base, err := s.dao.GetBase()
 	if err != nil {
-		fmt.Println("get base err:", err)
+		fmt.Println("s.dao.GetBase() err: ", err)
 		return
 	}
 
 	backPostModel = model.BackPostModel{
-		Post: post,
-		Base: base,
+		Post:        post,
+		Base:        base,
+		CurrentPage: "posts",
 	}
 
 	return
@@ -130,7 +132,7 @@ func (s *Service) BackEditPostViewService(slug string) (backEditPostModel model.
 
 	base, err := s.dao.GetBase()
 	if err != nil {
-		fmt.Println("get base err:", err)
+		fmt.Println("s.dao.GetBase() err: ", err)
 		return
 	}
 
@@ -141,9 +143,10 @@ func (s *Service) BackEditPostViewService(slug string) (backEditPostModel model.
 	}
 
 	backEditPostModel = model.BackEditPostModel{
-		Post:       post,
-		Base:       base,
-		Categories: categories,
+		Post:        post,
+		Base:        base,
+		Categories:  categories,
+		CurrentPage: "posts",
 	}
 
 	return

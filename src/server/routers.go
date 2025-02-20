@@ -42,13 +42,20 @@ func InitRouter() *gin.Engine {
 
 	// 后台分类
 	bcRouter := backRouter.Group("/categories")
-	bcRouter.GET("/", BackCategoriesView)               // 查所有
-	bcRouter.DELETE("/:categoryId", BackCategoriesView) // 查所有
-	bcRouter.PUT("/:categoryId", BackCategoriesView)    // 查所有
+	bcRouter.GET("/", BackCategoriesView)            // 查所有
+	bcRouter.POST("/", BackNewCategory)              // 增
+	bcRouter.DELETE("/:categoryId", BackDelCategory) // 删
+	bcRouter.PUT("/:categoryId", BackEditCategory)   // 改
 
 	// 后台评论
 	bcoRouter := backRouter.Group("/comments")
 	bcoRouter.DELETE("/:comment_id", BackDelComment) // 删
+
+	// 后台用户
+	bsRouter := backRouter.Group("/users")
+	bsRouter.GET("/", BackUsersView)             // 查所有
+	bsRouter.DELETE("/:userId", BackDelCategory) // 删
+	bsRouter.PUT("/:userId", BackDelCategory)    // 改
 
 	return r
 }

@@ -5,7 +5,7 @@ import "gorm.io/gorm"
 // User 结构体映射 users 表
 type User struct {
 	gorm.Model
-	Username   string `gorm:"unique;not null" form:"Username"`
+	Username   string `gorm:"not null" form:"Username"`
 	Password   string `gorm:"not null" form:"Password"`
 	Name       string `gorm:"not null" form:"Name"`
 	Age        string `gorm:"default:0" form:"Age"`
@@ -37,7 +37,7 @@ type Post struct {
 // Category 结构体映射 categories 表
 type Category struct {
 	gorm.Model
-	Name  string `gorm:"unique;not null"`
+	Name  string `gorm:"not null"`
 	Posts []Post `gorm:"foreignKey:CategoryID"` // 字段可以去除不会有问题
 }
 

@@ -6,6 +6,7 @@ import (
 	"blog1/src/pkg/response"
 	"errors"
 	"fmt"
+	"golang.org/x/crypto/bcrypt"
 	"strconv"
 )
 
@@ -22,9 +23,17 @@ func (s *Service) RegisterService(registerModel *model.RegisterReqModel) (err er
 		err = errors.New(response.ErrUserExisted.Msg())
 	} else {
 		// 若该用户不存在，则进行注册
+
+		// 加密
+		hashPassword, err := bcrypt.GenerateFromPassword([]byte(registerModel.Password), bcrypt.DefaultCost)
+		if err != nil {
+			fmt.Println("bcrypt.GenerateFromPassword() err:", err)
+			return
+		}
+
 		user := gorm_model.User{
 			Username: registerModel.Username,
-			Password: registerModel.Password,
+			Password: string(hashPassword),
 			Name:     registerModel.Name,
 			Gender:   registerModel.Gender,
 			Age:      strconv.Itoa(registerModel.Age),

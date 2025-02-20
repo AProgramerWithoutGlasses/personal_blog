@@ -39,8 +39,6 @@
         .action-buttons {
             margin-top: 10px;
         }
-
-        /* 其他样式保持不变 */
     </style>
 </head>
 <body>
@@ -49,11 +47,11 @@
     <div class="px-3">
         <h4 class="mt-3">后台管理</h4>
         <div class="list-group mt-3">
-            <a href="" class="list-group-item list-group-item-action active">文章管理</a>
-            <a href="../categories" class="list-group-item list-group-item-action">分类管理</a>
-            <a href="users" class="list-group-item list-group-item-action">用户管理</a>
-            <a href="/comments" class="list-group-item list-group-item-action">评论管理</a>
-            <a href="/settings" class="list-group-item list-group-item-action">系统设置</a>
+            <a href="/back/posts" class="list-group-item list-group-item-action {{if eq .Data.CurrentPage "posts"}}active{{end}}">文章管理</a>
+            <a href="/back/categories" class="list-group-item list-group-item-action {{if eq .Data.CurrentPage "categories"}}active{{end}}">分类管理</a>
+            <a href="/back/users" class="list-group-item list-group-item-action {{if eq .Data.CurrentPage "users"}}active{{end}}">用户管理</a>
+            <a href="/back/comments" class="list-group-item list-group-item-action {{if eq .Data.CurrentPage "comments"}}active{{end}}">评论管理</a>
+            <a href="/back/settings" class="list-group-item list-group-item-action {{if eq .Data.CurrentPage "settings"}}active{{end}}">系统设置</a>
         </div>
     </div>
 </nav>
@@ -64,7 +62,7 @@
         <div class="modal fade" id="addCategoryModal">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <form action="/back/categories" method="POST">
+                    <form id="addCategoryForm">
                         <div class="modal-header">
                             <h5 class="modal-title">新增分类</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -98,7 +96,7 @@
                     <p class="card-text">文章数量: {{len .Posts}}</p>
                     <div class="action-buttons">
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editCategoryModal{{.ID}}">编辑</button>
-                        <button type="button" class="btn btn-danger" onclick="confirmDelete('category', {{.ID}})">删除</button>
+                        <button type="button" class="btn btn-danger" onclick="confirmDelete('categories', {{.ID}})">删除</button>
                     </div>
                 </div>
             </div>
@@ -107,9 +105,7 @@
             <div class="modal fade" id="editCategoryModal{{.ID}}" tabindex="-1">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <form action="/back/categories/{{.ID}}" method="POST">
-                            <!-- 隐藏字段，标识请求类型为 PUT -->
-                            <input type="hidden" name="request_method" value="PUT">
+                        <form id="editCategoryForm{{.ID}}">
                             <div class="modal-header">
                                 <h5 class="modal-title">编辑分类</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -135,12 +131,76 @@
 
 <script src="/static/js/bootstrap.bundle.min.js"></script>
 <script>
+    // 新增分类表单提交
+    document.getElementById('addCategoryForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // 阻止默认表单提交
+
+        // 获取表单数据
+        var formData = new FormData(this);
+        var url = '/back/categories';
+
+        // 发送 POST 请求
+        fetch(url, {
+            method: 'POST',
+            body: formData
+        })
+            .then(function(response) {
+                if (response.ok) {
+                    // 关闭模态框并刷新页面
+                    var modal = bootstrap.Modal.getInstance(document.getElementById('addCategoryModal'));
+                    modal.hide();
+                    alert('新增分类成功');
+                    window.location.reload();
+                } else {
+                    alert('新增失败，请稍后重试！');
+                }
+            })
+            .catch(function(error) {
+                console.error('Error:', error);
+                alert('新增失败，请稍后重试！');
+            });
+    });
+
+    // 为每个编辑表单添加提交事件监听器
+    document.querySelectorAll('[id^=editCategoryForm]').forEach(function(form) {
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // 阻止默认表单提交
+
+            // 获取表单数据
+            var formData = new FormData(form);
+            var categoryId = form.id.replace('editCategoryForm', '');
+            var url = '/back/categories/' + categoryId;
+
+            // 发送 PUT 请求
+            fetch(url, {
+                method: 'PUT',
+                body: formData
+            })
+                .then(function(response) {
+                    if (response.ok) {
+                        // 关闭模态框并刷新页面
+                        var modal = bootstrap.Modal.getInstance(document.getElementById('editCategoryModal' + categoryId));
+                        modal.hide();
+                        alert("修改成功");
+                        window.location.reload();
+                    } else {
+                        alert('更新失败，请稍后重试！');
+                    }
+                })
+                .catch(function(error) {
+                    console.error('Error:', error);
+                    alert('更新失败，请稍后重试！');
+                });
+        });
+    });
+
     // 删除确认对话框
     function confirmDelete(type, id) {
-        if (confirm(`确定要删除这个${type === 'category' ? '分类' : '其他'}吗？`)) {
+        if (confirm(`确定要删除这个${type === 'categories' ? '分类' : '其他'}吗？`)) {
             fetch(`/back/${type}/${id}`, { method: 'DELETE' })
                 .then(response => {
                     if (response.ok) {
+                        alert('删除成功');
                         window.location.reload(); // 刷新页面
                     } else {
                         alert('删除失败，请稍后重试！');
